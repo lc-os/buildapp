@@ -8,6 +8,7 @@ from src.error.error import BuildException
 from src.oss.oss import OSS
 
 from src.android.android_project import AndroidProject
+from src.flutter.flutter_build import FlutterBuild
 
 
 # 打包 Android 相关
@@ -23,6 +24,7 @@ class AndroidBuild:
     default_apk_path = ""
 
     def __init__(self, path=".", android_release_dir="app/build/outputs/apk/release"):
+        self.flutter_build = FlutterBuild()
         self.path = path
         self.android_release_dir = android_release_dir
         # 加载 Android 项目信息
@@ -30,12 +32,22 @@ class AndroidBuild:
         self.default_apk_path = os.path.join(self.android_release_dir, self.default_apk_name)
 
     # 上传到蒲公英
-    def build_to_pgy(self):
+    def build_to_pgy(self,in_type, dd):
         try:
-            self.__build()
+            if in_type == "11":
+                self.__build()
             # 上传到蒲公英
             result = PGY.upload(self.__get_new_apk_path())
-            DingDing.send_with_pgy_response(result)
+            DingDing.send_with_pgy_response(result, dd)
+        except BuildException as e:
+            raise e
+
+     # 打开文件夹
+    def build_to_file(self):
+        try:
+            self.__build()
+            print("打开文件夹")
+            os.system("open " + self.android_release_dir)
         except BuildException as e:
             raise e
 
@@ -75,7 +87,8 @@ class AndroidBuild:
         self.__remove_all()
         # 2. 打包apk
         print("开始打包apk...")
-        self.__build_apk()
+        # self.__build_apk()
+        self.flutter_build.build_apk()
         print(self.default_apk_path)
         # 3. 判断文件是否成功
         if not Path(self.default_apk_path).is_file():

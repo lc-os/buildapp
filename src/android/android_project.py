@@ -74,9 +74,10 @@ class AndroidProject:
         :return:
         """
         if not len(self._format_apk_name):
-            # 命名规则 = 包名最后一项 + 版本号 + 时间 + apk
-            prefix = self.short_application_id + "-" + self.version_name + "_" + self.version_code + "_"
-            self._format_apk_name = prefix + time.strftime("%Y%m%d_%H.%M", time.localtime()) + ".apk"
+            # 命名规则 = 包名最后一项 + 版本号  + apk
+            prefix = self.short_application_id + "-" + self.version_name + "_" + self.version_code
+            # self._format_apk_name = prefix + time.strftime("%Y%m%d_%H.%M", time.localtime()) + ".apk"
+            self._format_apk_name = prefix + ".apk"
         return self._format_apk_name
 
     @property

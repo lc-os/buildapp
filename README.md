@@ -5,7 +5,7 @@
 * iOS上传到TestFlight
 * 发送消息到钉钉
 * 自动读取版本号来重命名上传包的文件名
-* [这里查看运行效果图](https://github.com/xushengjiang0/buildapp/raw/master/doc/images/img1.png)
+* [这里查看运行效果图](https://github.com/lc-os/buildapp/raw/master/doc/images/img1.png)
 
 ### 安装
 使用Python3编写，所以得自行安装相关环境<br/>
@@ -28,7 +28,18 @@
  12. apk ➣ 阿里云 ➣ 钉钉<br/>
  21. ipa ➣ 蒲公英 ➣ 钉钉<br/>
  22. ipa ➣ TestFlight ➣ 钉钉
+基于大佬版本改：<br/>
+11. apk ➣ 蒲公英 ➣ 钉钉 （xm xh）<br/>
+12. 蒲公英失败再次上传 ➣ 钉钉 （xm  xh）<br/>
+13. apk ➣ 打开文件夹<br/>
+21. ipa ➣ 蒲公英 ➣ 钉钉<br/>
+22. ipa ➣ AppStore ➣ 钉钉<br/>
+23. ipa ➣ 本地文件夹<br/>
+24. ipa ➣ 本地路径 ➣ AppStore
 ### 相关文章
- 1. 还在整理中...
+ 1. 懒人plist在doc中（请自行修改teamId）
+ 2. 除了src/config/config.py需要配置的地方 其他需要更改的地方看图
+ ![我是图1](https://github.com/lc-os/buildapp/raw/master/doc/images/img2.png)
+ ![我是图二](https://github.com/lc-os/buildapp/raw/master/doc/images/img3.png)
  
 

@@ -8,7 +8,7 @@ from src.dingding.dingding import DingDing
 from src.error.error import BuildException
 from src.ios.ios_project import IOSProject
 
-from src.ios.test_flight import TestFlight
+from src.ios.app_store import AppStore
 from src.ios.utils import export_ipa, export_archive
 from src.oss.oss import OSS
 from src.pgyer.pgyer import PGY
@@ -34,6 +34,9 @@ class IOSBuild:
     export_options_adhoc_path = ""
     export_options_app_store_path = ""
 
+    apple_username = ''
+    apple_password = ''
+
     def __init__(self, path="ios"):
         self.path = path
         self.project = IOSProject(self.path)
@@ -50,15 +53,35 @@ class IOSBuild:
         except BuildException as e:
             raise e
 
+    # 打包到文件夹 去手动签名
+    def ios_ad_hoc_to_sign(self):
+        try:
+            self.export_type = ExportType.AdHoc
+            self.__build()
+            print("打开文件夹")
+            os.system("open " + self.export_ipa_dir)
+            # result = PGY.upload(self.export_ipa_path)
+            # DingDing.send_with_pgy_response(result)
+        except BuildException as e:
+            raise e
+
     # 上传到苹果
     def build_to_app_store(self):
         self.export_type = ExportType.Release
         try:
             self.__build()
-            TestFlight.upload(self.export_ipa_path, APPLE_USERNAME, APPLE_PASSWORD)
+            if self.project.application_name == 'xxx':
+                apple_username = XXX_USERNAME
+                apple_password = XXX_USERNAME
+            elif self.project.application_name == 'yyy':
+                apple_username = YYY_USERNAME
+                apple_password = YYY_PASSWORD
+            # os.system("xcrun altool --upload-app -f %s -u %s -p %s --verbose",(self.export_ipa_path,APPLE_USERNAME,APPLE_PASSWORD))
+            AppStore.upload(self.export_ipa_path, apple_username, apple_password)
             # 上传到阿里云
-            url = self.__put_success_message()
-            self.__send_success_message(url)
+            # url = self.__put_success_message()
+            self.__send_success_message()
+            print("AppStore上传成功")
         except BuildException as e:
             self.__send_failure_message(str(e))
             raise e
@@ -67,23 +90,43 @@ class IOSBuild:
         self.__export_archive()
         self.__export_ipa()
 
+    # 上传本地ipa到苹果
+    def no_build_to_app_store(self,ipa_path):
+        self.export_type = ExportType.Release
+        try:
+            if self.project.application_name == 'xxx':
+                apple_username = XXX_USERNAME
+                apple_password = XXX_USERNAME
+            elif self.project.application_name == 'yyy':
+                apple_username = YYY_USERNAME
+                apple_password = YYY_PASSWORD
+            # os.system("xcrun altool --upload-app -f %s -u %s -p %s --verbose",(self.export_ipa_path,APPLE_USERNAME,APPLE_PASSWORD))
+            AppStore.upload(ipa_path, apple_username, apple_password)
+            # 上传到阿里云
+            # url = self.__put_success_message()
+            self.__send_success_message()
+            print("AppStore上传成功")
+        except BuildException as e:
+            self.__send_failure_message(str(e))
+            raise e
+
     # 发送失败消息
     def __send_failure_message(self, msg):
         app_name = self.project.application_name
         DingDing.send_prod_failure_message(app_name, "iOS", self.project.version_name, self.project.version_code, msg)
 
     # 发送成功消息
-    def __send_success_message(self, data):
+    def __send_success_message(self):
         # 发送消息到钉钉
         app_name = self.project.application_name
         version_name = self.project.version_name
         version_code = self.project.version_code
-        DingDing.send_prod_message(app_name, version_name, version_code, data)
+        DingDing.send_prod_message(app_name, version_name, version_code, 'ipa')
 
     def __put_success_message(self):
         ipa_name = self.project.format_ipa_name
         name = os.path.join(self.project.short_application_id, "ipa", ipa_name + ".txt")
-        text = "{}-请等待十分钟后从TestFlight测试此版本-{}({})".format(self.project.application_name,
+        text = "{}-请等待十分钟后从AppStore提交此版本-{}({})".format(self.project.application_name,
                                                           self.project.version_name,
                                                           self.project.version_code)
         url = OSS.put_text(name, text)

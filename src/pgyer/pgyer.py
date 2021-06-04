@@ -38,10 +38,14 @@ class PGY:
             }
             # 开始请求
             try:
+                requests.adapters.DEFAULT_RETRIES = 5 # 增加重连次数
+                s = requests.session()
+                s.keep_alive = False # 关闭多余连接
                 r = requests.post(cls.end_point, headers=headers, data=data, files=files)
                 response = r.json()
                 if response["code"] != 0:
                     raise BuildException("上传到蒲公英失败")
                 return response["data"]
-            except Exception:
+            except Exception as e:
+                print(e)
                 raise BuildException("上传到蒲公英失败2")

@@ -4,12 +4,13 @@ import subprocess
 from src.error.error import BuildException
 
 
-class TestFlight:
+class AppStore:
     # apple上传工具地址
-    _al_tool_path = r"/Applications/Xcode.app/Contents/Applications/Application\ " \
-                    r"Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/A/Support/altool "
+    # _al_tool_path = r"/Applications/Xcode.app/Contents/Applications/Application\ " \
+    #                 r"Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/A/Support/altool "
+    _al_tool_path = "xcrun altool"
 
-    # 上传到 TestFlight
+    # 上传到 AppStore
     @classmethod
     def upload(cls, ipa: str, user_name: str, password: str):
         # 0. 检查帐号
@@ -24,7 +25,7 @@ class TestFlight:
     @classmethod
     def __verify_ipa(cls, ipa: str, user_name: str, password: str):
         # 1. 验证 ipa
-        args = [cls._al_tool_path, "--validate-app", "-f", ipa, "-u", user_name, "-p", password]
+        args = [cls._al_tool_path, "--validate-app", "-f", ipa, "-t ios", "-u", user_name, "-p", password]
         print("执行命令：", " ".join(args))
         print("正在验证中...")
         process = subprocess.Popen(" ".join(args), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -40,7 +41,7 @@ class TestFlight:
     # 上传ipa
     @classmethod
     def __upload_ipa(cls, ipa: str, user_name: str, password: str):
-        args = [cls._al_tool_path, "--upload-app", "-t ios", "-f", ipa, "-u", user_name, "-p", password]
+        args = [cls._al_tool_path, "--upload-app", "-f", ipa, "-t ios", "-u", user_name, "-p", password]
         print("执行命令：", " ".join(args))
         print("正在上传中，时间较长，请耐心等待...")
         process = subprocess.Popen(" ".join(args), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)

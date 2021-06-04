@@ -11,7 +11,7 @@ class DingDing:
 
     # 根据蒲公英结果发送消息
     @classmethod
-    def send_with_pgy_response(cls, data):
+    def send_with_pgy_response(cls, data ,dd):
         print(json.dumps(data))
         # 内容
         text = """新版本提醒    
@@ -45,7 +45,10 @@ class DingDing:
             },
         }
         # 开始发送
-        cls.__send_message(body)
+        if 'xm' in dd:
+            cls.__send_message(body, XM_DD_ACCESS_TOKEN_PRO)
+        if 'xh' in dd:
+            cls.__send_message(body, XH_DD_ACCESS_TOKEN_PRO)
 
     # 发送正式消息
     @classmethod
